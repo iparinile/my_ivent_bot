@@ -14,8 +14,8 @@ def insert_consent(user_id, number_event, cursor, db):
     db.commit()
 
 
-def add_user(counter, user_id, name, cursor, db):
-    cursor.execute(f"INSERT OR IGNORE INTO Users (counter, user_id, name) VALUES ({counter}, {user_id}, {name}")
+def add_user(user_id, name, cursor, db):
+    cursor.execute(f"INSERT OR IGNORE INTO Users (user_id, name) VALUES ({user_id}, {name}")
     db.commit()
 
 

@@ -5,8 +5,7 @@ db = sqlite3.connect('mydata.sqlite')
 cursor = db.cursor()
 
 cursor.execute("""CREATE TABLE Users(
-counter INT PRIMARY KEY, 
-user_id INTEGER NOT NULL,
+user_id INTEGER PRIMARY KEY,
 name VARCHAR(30))""")
 
 cursor.execute("""CREATE TABLE Events(
@@ -14,7 +13,7 @@ number INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 name_event VARCHAR(30))""")
 
 cursor.execute("""CREATE TABLE Communication(
-user_id INTEGER NOT NULL,
+user_id INTEGER PRIMARY KEY,
 number_event INTEGER,
 status INTEGER)""")
 
