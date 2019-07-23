@@ -10,7 +10,7 @@ def number_events(cursor):
 
 
 def insert_consent(user_id, number_event, cursor, db):
-    cursor.execute(f"UPDATE Users SET user_id={user_id}, number_event={number_event}" WHERE )
+    cursor.execute(f"UPDATE Users SET user_id={user_id}, number_event={number_event}")
     cursor.execute(f"INSERT OR IGNORE INTO Users (user_id, number_event) VALUES ({user_id}, {number_event}) ")
     db.commit()
 
