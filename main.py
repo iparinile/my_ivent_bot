@@ -42,6 +42,7 @@ def call_data(call):
     if call.data.split('%')[0] == "a":
         db_comm.insert_consent(call.message.chat.id, call.data.split('%')[1], cursor, db)
         db_comm.insert_name_event(call.data.split('%')[1], cursor, db)
+        db_comm.set_state(call.message.chat.id, 1, cursor, db)
         bot.send_message(call.message.chat.id, 'Отлично! Теперь напиши свое имя')
 
 
