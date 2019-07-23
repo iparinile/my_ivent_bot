@@ -6,16 +6,14 @@ cursor = db.cursor()
 
 cursor.execute("""CREATE TABLE Users(
 user_id INTEGER PRIMARY KEY,
-name VARCHAR(30))""")
+name VARCHAR(30),
+number_event INTEGER,
+name_event VARCHAR(30),
+status INTEGER)""")
 
 cursor.execute("""CREATE TABLE Events(
-number INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+number_event INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 name_event VARCHAR(30))""")
-
-cursor.execute("""CREATE TABLE Communication(
-user_id INTEGER PRIMARY KEY,
-number_event INTEGER,
-status INTEGER)""")
 
 db_comm.add_event('Круг сатаны', cursor, db)
 db_comm.add_event('Судная ночь', cursor, db)

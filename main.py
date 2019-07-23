@@ -29,8 +29,8 @@ def text(message):
         keyboard1 = telebot.types.InlineKeyboardMarkup()
         events = db_comm.get_event_list(cursor)
         for event in events:
-            keyboard1.add(
-                telebot.types.InlineKeyboardButton(text=event[1], callback_data=f'a%{event[0]}'))
+            keyboard1.add(telebot.types.InlineKeyboardButton(text=event[1], callback_data=f'a%{event[0]}'))
+            print(event[1])
         bot.send_message(message.chat.id, "Выберите ивент", reply_markup=keyboard1)
     # elif message.text == 'Отметить присутствие на ивенте':
 
@@ -39,6 +39,11 @@ def text(message):
 def call_data(call):
     if call.data.split('%')[0] == "a":
         db_comm.insert_consent(call.message.chat.id, call.data.split('%')[1], cursor, db)
+        db_comm.insert_name_event(call.data.split('%')[1], cursor, db)
+        bot.send_message(call.message.chat.id, 'Отлично! Теперь напиши свое имя')
+
+
+@bot.message_handler(content_types=['text'], func=lambda message: get_state(message.from_user.id, cursor) == 1)
 
 
 bot.polling()

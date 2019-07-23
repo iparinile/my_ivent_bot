@@ -10,7 +10,7 @@ def number_events(cursor):
 
 
 def insert_consent(user_id, number_event, cursor, db):
-    cursor.execute(f"INSERT INTO Communication (user_id, name_event, status) VALUES ({user_id}, {number_event}, 0)")
+    cursor.execute(f"INSERT OR IGNORE INTO Users (user_id, number_event, status) VALUES ({user_id}, {number_event}, 1)")
     db.commit()
 
 
@@ -27,3 +27,20 @@ def get_name_event(number, cursor):
 def add_event(name_event, cursor, db):
     cursor.execute(f"INSERT INTO Events (name_event) VALUES ('{name_event}')")
     db.commit()
+
+
+def insert_name_event(number_event, cursor, db):
+    cursor.execute(
+        f"UPDATE Users SET name_event=(SELECT name_event FROM Events WHERE number_event = '{number_event}') "
+        f"WHERE number_event='{number_event}'")
+    db.commit()
+
+
+def get_state(user_id, cursor):
+    cursor.execute('SELECT status FROM Users WHERE user_id=' +
+                   str(user_id))
+    a = cursor.fetchone()
+    if a is None:
+        return -1
+    else:
+        return a[0]
