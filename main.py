@@ -33,6 +33,8 @@ def text(message):
             print(event[1])
         bot.send_message(message.chat.id, "Выберите ивент", reply_markup=keyboard1)
     # elif message.text == 'Отметить присутствие на ивенте':
+    else:
+        bot.send_message(message.chat.id, 'Я тебя не понимаю((( Попробуй /start или /help')
 
 
 @bot.callback_query_handler(func=lambda call: True)
@@ -43,7 +45,13 @@ def call_data(call):
         bot.send_message(call.message.chat.id, 'Отлично! Теперь напиши свое имя')
 
 
-@bot.message_handler(content_types=['text'], func=lambda message: get_state(message.from_user.id, cursor) == 1)
+@bot.message_handler(content_types=['text'], func=lambda message: db_comm.get_state(message.chat.id, cursor) == 1)
+def ask_name(message):
+    db_comm.set_state(message.chat.id, 2, cursor, db)
+    db_comm.insert_name_of_user(message.chat.id, message.text, cursor, db)
+    bot.send_message(message.chat.id, "Ты крут! Почему? Бот работает, тебя зовут " + message.text +
+                     " и ты записался на одно из этих чертовых мероприятий! Когда придешь на мероприятие, "
+                     "не забудь отметиться у меня")
 
 
 bot.polling()

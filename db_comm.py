@@ -39,8 +39,21 @@ def insert_name_event(number_event, cursor, db):
 def get_state(user_id, cursor):
     cursor.execute('SELECT status FROM Users WHERE user_id=' +
                    str(user_id))
-    a = cursor.fetchone()
+    print(cursor.fetchall() + 'haha')
+    a = cursor.fetchall()
+    print(a)
     if a is None:
         return -1
     else:
         return a[0]
+
+
+def set_state(user_id, status, cursor, db):
+    cursor.execute('UPDATE Users SET status=' + str(status) +
+                   ' WHERE user_id=' + str(user_id))
+    db.commit()
+
+
+def insert_name_of_user(user_id, name, cursore, db):
+    cursore.execute('UPDATE Users SET name=' + str(name) + ' WHERE user_id=' + str(user_id))
+    db.commit()
