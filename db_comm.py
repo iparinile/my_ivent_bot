@@ -10,7 +10,7 @@ def number_events(cursor):
 
 
 def insert_consent(user_id, number_event, cursor, db):
-    cursor.execute(f"UPDATE Users SET user_id={user_id}, number_event={number_event}")
+    cursor.execute(f"UPDATE OR IGNORE Users SET number_event={number_event} WHERE user_id={user_id}")
     cursor.execute(f"INSERT OR IGNORE INTO Users (user_id, number_event) VALUES ({user_id}, {number_event}) ")
     db.commit()
 
@@ -22,6 +22,11 @@ def add_user(user_id, name, cursor, db):
 
 def get_name_event(number, cursor):
     cursor.execute(f"SELECT name_event FROM Events WHERE number={number} ")
+    return str(cursor.fetchall())[2:-3]
+
+
+def get_name_event_from_user(user_id, cursor):
+    cursor.execute(f"SELECT name_event FROM Users WHERE user_id={user_id}")
     return str(cursor.fetchall())[2:-3]
 
 
