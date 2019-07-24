@@ -1,6 +1,5 @@
 def get_event_list(cursor):
     cursor.execute(f"SELECT * FROM Events")
-    # print(cursor.fetchall())
     return cursor.fetchall()
 
 
@@ -10,13 +9,12 @@ def number_events(cursor):
 
 
 def insert_consent(user_id, number_event, cursor, db):
-    cursor.execute(f"UPDATE OR IGNORE Users SET number_event={number_event} WHERE user_id={user_id}")
-    cursor.execute(f"INSERT OR IGNORE INTO Users (user_id, number_event) VALUES ({user_id}, {number_event}) ")
+    cursor.execute(f"UPDATE Users SET number_event={number_event} WHERE user_id={user_id}")
     db.commit()
 
 
-def add_user(user_id, name, cursor, db):
-    cursor.execute(f"INSERT OR IGNORE INTO Users (user_id, name) VALUES ({user_id}, {name}")
+def add_user(user_id, cursor, db):
+    cursor.execute(f"INSERT OR IGNORE INTO Users (user_id) VALUES ({user_id})")
     db.commit()
 
 
@@ -46,8 +44,8 @@ def get_state(user_id, cursor):
     cursor.execute('SELECT status FROM Users WHERE user_id=' +
                    str(user_id))
     a = cursor.fetchall()
-    if a is None:
-        return -1
+    if a is None or 0:
+        return 0
     else:
         return a[0][0]
 
