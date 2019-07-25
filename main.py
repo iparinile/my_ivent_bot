@@ -14,8 +14,9 @@ keyboard.add('Отметить присутствие на ивенте')
 
 @bot.message_handler(commands=["start"])
 def start(message):
-    bot.send_message(message.chat.id, 'Привет! Что ты хочешь?', reply_markup=keyboard)
+    bot.send_message(message.chat.id, 'Привет! Как тебя зовут?')
     db_comm.add_user(message.chat.id, cursor, db)
+    db_comm.set_state(message.chat.id, 1, cursor, db)
 
 
 @bot.message_handler(commands=["help"])
@@ -55,15 +56,14 @@ def text(message):
     elif db_comm.get_state(message.chat.id, cursor) == 1:
         db_comm.set_state(message.chat.id, 2, cursor, db)
         db_comm.insert_name_of_user(message.chat.id, message.text, cursor, db)
-        bot.send_message(message.chat.id, "Ты крут(ая)! Почему? Бот работает, тебя зовут " + message.text +
-                         " и ты записался(ась) на event " + db_comm.get_name_event_from_user(message.chat.id, cursor) +
-                         "! " + "Когда придешь на мероприятие, не забудь отметиться у меня.")
+        bot.send_message(message.chat.id, 'Отлично!', reply_markup=keyboard)
     elif message.text == 'Отметить присутствие на ивенте':
-        if db_comm.get_state(message.chat.id, cursor) == 2:
-            db_comm.set_state(message.chat.id, 3, cursor, db)
-            bot.send_message(message.chat.id, 'Оу, да ты я смотрю целеустремленный(ая). Взял(а) и пришел(ла) на event '
-                             + db_comm.get_name_event_from_user(message.chat.id, cursor) +
-                             ' Ну все, я отметил твое присутствие.')
+        if db_comm.get_state_from_main(message.chat.id, cursor) == 1:
+            keyboard2 = telebot.types.InlineKeyboardMarkup()
+            events = db_comm.get_event_list_from_main(message.chat.id, cursor)
+            for event in events:
+                keyboard2.add(telebot.types.InlineKeyboardButton(text=event[0], callback_data=f'a%{event[0]}'))
+            bot.send_message(message.chat.id, "Выбери ивент", reply_markup=keyboard2)
         else:
             bot.send_message(message.chat.id, 'Ты не зарегестрирован(а) ни на одно мероприятие. Для начала сделай это.')
     elif message.text == 'Добавить ивент' and db_comm.get_state(message.chat.id, cursor) == 777:
@@ -80,12 +80,11 @@ def text(message):
 @bot.callback_query_handler(func=lambda call: True)
 def call_data(call):
     if call.data.split('%')[0] == "a":
-        db_comm.insert_consent(call.message.chat.id, call.data.split('%')[1], cursor, db)
-        db_comm.insert_name_event(call.data.split('%')[1], cursor, db)
-        db_comm.set_state(call.message.chat.id, 1, cursor, db)
-        bot.send_message(call.message.chat.id, 'Отлично! Ты зарегестрировался(ась) на ивент '
-                         + db_comm.get_name_event_from_user(call.message.chat.id, cursor) + '.' +
-                         ' Теперь напиши свое имя')
+        if db_comm.nexyu(call.message.chat.id, call.data.split('%')[1], cursor) == None:
+            db_comm.add_user_to_main(call.message.chat.id, call.data.split('%')[1], cursor, db)
+            bot.send_message(call.message.chat.id, 'Отлично! Ты зарегестрировался(ась) на ивент.')
+        else:
+            bot.send_message(call.message.chat.id, 'Сори, но вы уже зарегестрировались на это мероприятие!')
 
 
 bot.polling()

@@ -9,17 +9,19 @@ def number_events(cursor):
 
 
 def insert_consent(user_id, number_event, cursor, db):
-    cursor.execute(f"UPDATE Users SET number_event={number_event} WHERE user_id={user_id}")
+    cursor.execute(f"UPDATE OR IGNORE Main SET number_event={number_event}, user_id={user_id}")
+    cursor.execute(f"INSERT OR IGNORE INTO Main (number_event, user_id) VALUES ({number_event}, {user_id})")
     db.commit()
 
 
-def add_user(user_id, cursor, db):
+def add_user(user_id,  cursor, db):
     cursor.execute(f"INSERT OR IGNORE INTO Users (user_id) VALUES ({user_id})")
     db.commit()
 
 
-def get_name_event(number, cursor):
-    cursor.execute(f"SELECT name_event FROM Events WHERE number={number} ")
+def get_name_event(number_event, cursor):
+    print(number_event)
+    cursor.execute(f"SELECT name_event FROM Events WHERE number_event={number_event} ")
     return str(cursor.fetchall())[2:-3]
 
 
@@ -30,13 +32,6 @@ def get_name_event_from_user(user_id, cursor):
 
 def add_event(name_event, cursor, db):
     cursor.execute(f"INSERT INTO Events (name_event) VALUES ('{name_event}')")
-    db.commit()
-
-
-def insert_name_event(number_event, cursor, db):
-    cursor.execute(
-        f"UPDATE Users SET name_event=(SELECT name_event FROM Events WHERE number_event = '{number_event}') "
-        f"WHERE number_event='{number_event}'")
     db.commit()
 
 
@@ -59,3 +54,33 @@ def set_state(user_id, status, cursor, db):
 def insert_name_of_user(user_id, name, cursore, db):
     cursore.execute(f"UPDATE Users SET name='{name}'  WHERE user_id={user_id}")
     db.commit()
+
+
+def set_state_main(user_id, status, cursor, db):
+    cursor.execute('UPDATE Main SET status=' + str(status) +
+                   ' WHERE user_id=' + str(user_id))
+    db.commit()
+
+
+def add_user_to_main(user_id, number_event, cursor, db):
+    cursor.execute(f"INSERT OR IGNORE INTO Main (user_id, number_event ,name_event , status) VALUES ({user_id}, "
+                   f"{number_event}, {get_name_event(number_event, cursor)}, 1)")
+    db.commit()
+
+def nexyu(user_id, number_event, cursor):
+    cursor.execute(f"SELECT counter FROM Main WHERE user_id={user_id} AND number_event={number_event}")
+    return cursor.fetchone()
+
+def get_state_from_main(user_id, cursor):
+    cursor.execute('SELECT status FROM Main WHERE user_id=' +
+                   str(user_id))
+    a = cursor.fetchall()
+    if a is None or 0:
+        return 0
+    else:
+        return a[0][0]
+
+
+def get_event_list_from_main(user_id, cursor):
+    cursor.execute(f"SELECT name_event FROM Main WHERE user_id={user_id}")
+    return cursor.fetchall()
