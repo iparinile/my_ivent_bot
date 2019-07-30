@@ -80,7 +80,7 @@ def text(message):
 @bot.callback_query_handler(func=lambda call: True)
 def call_data(call):
     if call.data.split('%')[0] == "a":
-        if db_comm.nexyu(call.message.chat.id, call.data.split('%')[1], cursor) == None:
+        if db_comm.something(call.message.chat.id, call.data.split('%')[1], cursor) == None:
             db_comm.add_user_to_main(call.message.chat.id, call.data.split('%')[1], cursor, db)
             bot.send_message(call.message.chat.id, 'Отлично! Ты зарегестрировался(ась) на ивент.')
         else:

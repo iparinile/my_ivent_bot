@@ -14,7 +14,7 @@ def insert_consent(user_id, number_event, cursor, db):
     db.commit()
 
 
-def add_user(user_id,  cursor, db):
+def add_user(user_id, cursor, db):
     cursor.execute(f"INSERT OR IGNORE INTO Users (user_id) VALUES ({user_id})")
     db.commit()
 
@@ -67,9 +67,11 @@ def add_user_to_main(user_id, number_event, cursor, db):
                    f"{number_event}, {get_name_event(number_event, cursor)}, 1)")
     db.commit()
 
-def nexyu(user_id, number_event, cursor):
+
+def something(user_id, number_event, cursor):
     cursor.execute(f"SELECT counter FROM Main WHERE user_id={user_id} AND number_event={number_event}")
     return cursor.fetchone()
+
 
 def get_state_from_main(user_id, cursor):
     cursor.execute('SELECT status FROM Main WHERE user_id=' +
