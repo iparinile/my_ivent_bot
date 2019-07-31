@@ -62,7 +62,6 @@ def text(message):
             keyboard2 = telebot.types.InlineKeyboardMarkup()
             events = db_comm.get_event_list_from_main(message.chat.id, cursor)
             for event in events:
-                print(event)
                 keyboard2.add(telebot.types.InlineKeyboardButton(text=event[0], callback_data=f'b%{event[1]}'))
             bot.send_message(message.chat.id, "Выбери ивент", reply_markup=keyboard2)
         else:

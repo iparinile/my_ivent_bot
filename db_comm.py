@@ -20,7 +20,6 @@ def add_user(user_id, cursor, db):
 
 
 def get_name_event(number_event, cursor):
-    print(number_event)
     cursor.execute(f"SELECT name_event FROM Events WHERE number_event={number_event} ")
     return str(cursor.fetchall())[2:-3]
 
@@ -77,7 +76,6 @@ def get_state_from_main(user_id, cursor):
     cursor.execute('SELECT status FROM Main WHERE user_id=' +
                    str(user_id))
     a = cursor.fetchall()
-    print(len(a))
     if not a:
         return 0
     else:
