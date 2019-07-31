@@ -62,7 +62,8 @@ def text(message):
             keyboard2 = telebot.types.InlineKeyboardMarkup()
             events = db_comm.get_event_list_from_main(message.chat.id, cursor)
             for event in events:
-                keyboard2.add(telebot.types.InlineKeyboardButton(text=event[0], callback_data=f'a%{event[0]}'))
+                print(event)
+                keyboard2.add(telebot.types.InlineKeyboardButton(text=event[0], callback_data=f'b%{event[1]}'))
             bot.send_message(message.chat.id, "Выбери ивент", reply_markup=keyboard2)
         else:
             bot.send_message(message.chat.id, 'Ты не зарегестрирован(а) ни на одно мероприятие. Для начала сделай это.')
@@ -85,6 +86,12 @@ def call_data(call):
             bot.send_message(call.message.chat.id, 'Отлично! Ты зарегестрировался(ась) на ивент.')
         else:
             bot.send_message(call.message.chat.id, 'Сори, но вы уже зарегестрировались на это мероприятие!')
+    elif call.data.split('%')[0] == "b":
+        db_comm.check_in(call.message.chat.id, call.data.split('%')[1], cursor, db)
+        bot.send_message(call.message.chat.id, 'Оу, да ты целеустремленный, офигеть, пришел на event! Ну хорошо,'
+                                               'я тебя отметил, развлекайся!')
+
+
 
 
 bot.polling()

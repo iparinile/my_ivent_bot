@@ -77,12 +77,23 @@ def get_state_from_main(user_id, cursor):
     cursor.execute('SELECT status FROM Main WHERE user_id=' +
                    str(user_id))
     a = cursor.fetchall()
-    if a is None or 0:
+    print(len(a))
+    if not a:
         return 0
     else:
-        return a[0][0]
+        for i in range(len(a)):
+            if a[i][0] == 1:
+                return a[i][0]
 
 
 def get_event_list_from_main(user_id, cursor):
-    cursor.execute(f"SELECT name_event FROM Main WHERE user_id={user_id}")
+    cursor.execute(
+        f"SELECT name_event, number_event FROM Main WHERE user_id={user_id} AND status={get_state_from_main(user_id, cursor)}")
     return cursor.fetchall()
+
+
+def check_in(user_id, number_event, cursor, db):
+    cursor.execute(f"UPDATE Main SET status=2 WHERE user_id={user_id} AND number_event={number_event}")
+    db.commit()
+
+
