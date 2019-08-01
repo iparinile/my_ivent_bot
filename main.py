@@ -29,6 +29,7 @@ def help_user(message):
 
 keyboard_admin = telebot.types.ReplyKeyboardMarkup(True)
 keyboard_admin.add('Добавить ивент')
+keyboard_admin.add('Собрать статистику по ивентам')
 
 
 @bot.message_handler(commands=["admin"])
@@ -73,6 +74,12 @@ def text(message):
         db_comm.add_event(message.text, cursor, db)
         db_comm.set_state(message.chat.id, 777, cursor, db)
         bot.send_message(message.chat.id, 'Ты успешно добавил(а) ивент!')
+    elif message.text == 'Собрать статистику по ивентам' and db_comm.get_state(message.chat.id, cursor) == 777:
+        stat = telebot.types.InlineKeyboardMarkup()
+        events = db_comm.get_event_list(cursor)
+        for event in events:
+            stat.add(telebot.types.InlineKeyboardButton(text=event[1], callback_data=f'c%{event[0]}'))
+        bot.send_message(message.chat.id, 'Выберите ивент, по которому вывести статистику', reply_markup=stat)
     else:
         bot.send_message(message.chat.id, 'Я тебя не понимаю((( Попробуй /start или /help')
 
@@ -80,7 +87,7 @@ def text(message):
 @bot.callback_query_handler(func=lambda call: True)
 def call_data(call):
     if call.data.split('%')[0] == "a":
-        if db_comm.something(call.message.chat.id, call.data.split('%')[1], cursor) == None:
+        if db_comm.something(call.message.chat.id, call.data.split('%')[1], cursor) is None:
             db_comm.add_user_to_main(call.message.chat.id, call.data.split('%')[1], cursor, db)
             bot.send_message(call.message.chat.id, 'Отлично! Ты зарегестрировался(ась) на ивент.')
         else:
@@ -89,8 +96,19 @@ def call_data(call):
         db_comm.check_in(call.message.chat.id, call.data.split('%')[1], cursor, db)
         bot.send_message(call.message.chat.id, 'Оу, да ты целеустремленный, офигеть, пришел на event! Ну хорошо,'
                                                'я тебя отметил, развлекайся!')
-
-
+    elif call.data.split('%')[0] == "c":
+        a = db_comm.get_event_to_statistics(call.data.split('%')[1], cursor)
+        come = 0
+        not_come = 0
+        for i in range(len(a)):
+            if a[i][0] == 1:
+                not_come += 1
+            else:
+                come += 1
+        bot.send_message(call.message.chat.id, 'На мероприятие ' + db_comm.get_name_event(call.data.split('%')[1],
+                                                                                          cursor) + '\n' +
+                         'Записалось - ' + str(not_come) + '\n'
+                         'Пришло - ' + str(come))
 
 
 bot.polling()

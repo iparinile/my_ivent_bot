@@ -95,3 +95,11 @@ def check_in(user_id, number_event, cursor, db):
     db.commit()
 
 
+def statistics(cursor):
+    cursor.execute(f"SELECT name_event FROM Main WHERE status=1")
+    print(cursor.fetchall())
+
+
+def get_event_to_statistics(number_event, cursor):
+    cursor.execute(f"SELECT status FROM Main WHERE number_event={number_event}")
+    return cursor.fetchall()
