@@ -107,7 +107,7 @@ def call_data(call):
                 come += 1
         bot.send_message(call.message.chat.id, 'На мероприятие ' + db_comm.get_name_event(call.data.split('%')[1],
                                                                                           cursor) + '\n' +
-                         'Записалось - ' + str(not_come) + '\n'
+                         'Записалось - ' + str(not_come + come) + '\n'
                          'Пришло - ' + str(come))
 
 
